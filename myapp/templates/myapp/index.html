@@ -1,0 +1,29 @@
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{% static 'css/output.css' %}" rel="stylesheet">
+  <link rel="icon" href="{% static 'myapp/images/logo.png' %}" type="image/png">
+  <title>Quiz App</title>
+</head>
+<body class="bg-gray-100 font-sans leading-relaxed">
+
+  <header class="bg-gray-800 text-white py-5 text-center">
+    <nav class="flex justify-between items-center px-5">
+      <div class="text-xl font-bold">QuizApp</div>
+      <ul class="flex space-x-4">
+        <!-- Empty for now -->
+      </ul>
+    </nav>
+    <div class="flex flex-col items-center justify-center bg-cover bg-center h-screen" style="background-image: url('hero-bg.jpg');" id="home">
+      <h1 class="text-5xl font-semibold text-white">Welcome to QuizApp</h1>
+      <p class="text-xl text-white mt-4">Challenge your knowledge and improve</p>
+      <!-- Login Button moved to hero section -->
+      <a href="{% url 'login' %}" class="mt-6 bg-red-500 py-3 px-6 rounded text-white hover:bg-red-700">Login</a>
+    </div>
+  </header>
+
+  <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

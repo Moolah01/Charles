@@ -1,0 +1,118 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <!-- Optional for better styling -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="{% static 'myapp/images/logo.png' %}" type="image/png">
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Main Wrapper -->
+    <div class="flex">
+
+        <!-- Sidebar -->
+        {% include 'myapp/sidebar_teacher.html' %}
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <h2 class="text-3xl font-semibold mb-4 text-center text-gray-800">Welcome to Your Dashboard, {{ request.user.username }}</h2>
+
+            <!-- Dashboard Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+
+                <!-- Manage Classes Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-chalkboard-teacher text-3xl text-green-500 mr-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Manage Classes</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Manage the classes you are teaching. Create new classes and assign students to them.</p>
+                    <a href="" class="bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600">Manage</a>
+                </div>
+
+                <!-- Create Quiz Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-edit text-3xl text-purple-500 mr-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Create Quiz</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Create quizzes for your classes. Choose from multiple question types and set schedules.</p>
+                    <a href="" class="bg-purple-500 text-white py-2 px-4 rounded-full hover:bg-purple-600">Create Quiz</a>
+                </div>
+
+                <!-- View Students Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-user-graduate text-3xl text-blue-500 mr-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">View Students</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">View a list of students enrolled in your classes and manage their participation.</p>
+                    <a href="" class="bg-blue-500 text-white py-2 px-4 rounded-full hover:bg-blue-600">View Students</a>
+                </div>
+
+                <!-- View Grades Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-graduation-cap text-3xl text-yellow-500 mr-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">View Grades</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">View the grades of students for the quizzes they have completed.</p>
+                    <a href="" class="bg-yellow-500 text-white py-2 px-4 rounded-full hover:bg-yellow-600">View Grades</a>
+                </div>
+
+                <!-- Data Banking Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-database text-3xl text-teal-500 mr-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Data Banking</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Create and store question banks to easily use them in future quizzes.</p>
+                    <a href="" class="bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600">Manage Questions</a>
+                </div>
+
+                <!-- Quiz Reports Card -->
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-file-alt text-3xl text-indigo-500 mr-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Quiz Reports</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Generate downloadable reports of student grades for the quizzes taken.</p>
+                    <a href="" class="bg-indigo-500 text-white py-2 px-4 rounded-full hover:bg-indigo-600">View Reports</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout confirmation script -->
+    <script>
+        function confirmLogout(event) {
+            if (confirm("Are you sure you want to log out?")) {
+                document.getElementById("logout-form").submit();
+            } else {
+                event.preventDefault();
+            }
+        }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mobileButton = document.getElementById('sidebar-mobile-button');
+
+            // Toggle the sidebar visibility on mobile
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('md:block');
+            mobileButton.classList.toggle('hidden');
+        }
+    </script>
+
+</body>
+
+</html>

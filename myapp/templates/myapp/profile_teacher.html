@@ -1,0 +1,184 @@
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="{% static 'myapp/images/logo.png' %}" type="image/png">
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="flex">
+
+        <!-- Sidebar -->
+        {% include 'myapp/sidebar_teacher.html' %}
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <div class="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg">
+
+                <!-- Page Title -->
+                <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">Your Profile</h2>
+
+                <!-- Messages Section -->
+                {% if messages %}
+                    <div class="space-y-4 mb-6">
+                        {% for message in messages %}
+                            <div class="p-4 text-sm rounded-lg shadow-md text-white {{ message.tags }}"
+                                style="{% if message.tags == 'success' %}background-color: #22c55e;{% elif message.tags == 'error' %}background-color: #ef4444;{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Profile Information Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Left Side: Profile Image -->
+                    <div class="flex justify-center">
+                        <div class="w-40 h-40 bg-gray-100 rounded-full overflow-hidden">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="w-full h-full object-cover">
+                            {% else %}
+                                <img src="{% static 'images/default-avatar.png' %}" alt="Default Avatar" class="w-full h-full object-cover">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Right Side: User Info & Edit Fields -->
+                    <div class="col-span-2 space-y-6">
+                        <!-- Username -->
+                        <div>
+                            <label class="block text-gray-700 font-medium">Username</label>
+                            <p class="text-lg">{{ user.username }}</p>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-gray-700 font-medium">Email</label>
+                            <p class="text-lg">{{ user.email }}</p>
+                        </div>
+
+                        <!-- Role -->
+                        <div>
+                            <label class="block text-gray-700 font-medium">Role</label>
+                            <p class="text-lg">{{ user.get_role_display }}</p>
+                        </div>
+
+                        <!-- Edit Button Row -->
+                        <div class="flex space-x-4">
+                            <button onclick="toggleModal('editProfileModal')" class="w-full py-2 text-white font-medium rounded-md bg-blue-500 hover:bg-blue-600 shadow-md transition duration-300">
+                                Edit Profile
+                            </button>
+                            <button onclick="toggleModal('changePasswordModal')" class="w-full py-2 text-white font-medium rounded-md bg-blue-500 hover:bg-blue-600 shadow-md transition duration-300">
+                                Change Password
+                            </button>
+                            <button onclick="toggleModal('deleteAccountModal')" class="w-full py-2 text-white font-medium rounded-md bg-red-500 hover:bg-red-600 shadow-md transition duration-300">
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Edit Profile -->
+                <div id="editProfileModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" aria-labelledby="editProfileModalLabel" role="dialog" aria-hidden="true">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md" role="document">
+                        <h3 id="editProfileModalLabel" class="text-xl font-semibold text-center mb-4">Edit Profile</h3>
+                        <form action="{% url 'edit_profile' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700">Username</label>
+                                    <input type="text" name="username" class="w-full p-2 border border-gray-300 rounded-md" value="{{ user.username }}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700">Email</label>
+                                    <input type="email" name="email" class="w-full p-2 border border-gray-300 rounded-md" value="{{ user.email }}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700">Profile Picture</label>
+                                    <input type="file" name="profile_picture" class="w-full p-2 border border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                            <div class="flex justify-end mt-4">
+                                <button type="submit" class="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600">Save Changes</button>
+                                <button type="button" class="py-2 px-4 ml-2 bg-gray-300 text-white rounded-md hover:bg-gray-400" onclick="toggleModal('editProfileModal')">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal for Change Password -->
+                <div id="changePasswordModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" aria-labelledby="changePasswordModalLabel" role="dialog" aria-hidden="true">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md" role="document">
+                        <h3 id="changePasswordModalLabel" class="text-xl font-semibold text-center mb-4">Change Password</h3>
+                        <form id="changePasswordForm" action="{% url 'change_password' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-700">Old Password</label>
+                                    <input type="password" name="old_password" class="w-full p-2 border border-gray-300 rounded-md" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700">New Password</label>
+                                    <input type="password" name="new_password" class="w-full p-2 border border-gray-300 rounded-md" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700">Confirm Password</label>
+                                    <input type="password" name="confirm_password" class="w-full p-2 border border-gray-300 rounded-md" required>
+                                </div>
+                            </div>
+                            <div class="flex justify-end mt-4">
+                                <button type="submit" class="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600">Change Password</button>
+                                <button type="button" class="py-2 px-4 ml-2 bg-gray-300 text-white rounded-md hover:bg-gray-400" onclick="toggleModal('changePasswordModal')">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal for Delete Account -->
+                <div id="deleteAccountModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" aria-labelledby="deleteAccountModalLabel" role="dialog" aria-hidden="true">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md" role="document">
+                        <h3 id="deleteAccountModalLabel" class="text-xl font-semibold text-center mb-4">Are you sure you want to delete your account?</h3>
+                        <form action="{% url 'delete_account' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="flex justify-end mt-4">
+                                <button type="submit" class="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600">Delete Account</button>
+                                <button type="button" class="py-2 px-4 ml-2 bg-gray-300 text-white rounded-md hover:bg-gray-400" onclick="toggleModal('deleteAccountModal')">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Function to toggle visibility of modals
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.toggle('hidden');
+        }
+
+        // Close modal if clicked outside
+        window.addEventListener('click', function(event) {
+            const modal = document.querySelectorAll('.fixed');
+            modal.forEach(function(mod) {
+                if (event.target === mod) {
+                    mod.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!-- Sidebar (becomes header on mobile) -->
+<div id="sidebar" class="w-full md:w-64 bg-gradient-to-r from-green-600 via-green-500 to-green-400 text-white min-h-screen p-6 rounded-l-xl shadow-xl transition-all duration-300 ease-in-out hidden md:block hover:rounded-3xl">
+    <!-- Avatar Section -->
+    <div class="flex items-center justify-center mb-6">
+        <!-- Avatar Image -->
+        <img class="w-16 h-16 p-1 rounded-full ring-4 ring-white shadow-lg"
+             src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}/static/myapp/images/Avatar.jpg{% endif %}"
+             alt="User Avatar">
+    </div>
+
+    <!-- Navigation Links -->
+    <ul class="space-y-4">
+        <li><a href="{% url 'teacher-dashboard' %}" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300"><i class="fas fa-home mr-3"></i>Dashboard</a></li>
+        <li><a href="#" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300"><i class="fas fa-chalkboard-teacher mr-3"></i>Manage Classes</a></li>
+        <li><a href="#" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300"><i class="fas fa-user-graduate mr-3"></i>View Students</a></li>
+        <li><a href="#" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300"><i class="fas fa-edit mr-3"></i>Create Quiz</a></li>
+        <li><a href="#" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300"><i class="fas fa-list-alt mr-3"></i>View Quizzes</a></li>
+        <li><a href="#" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300"><i class="fas fa-graduation-cap mr-3"></i>View Grades</a></li>
+        <li><a href="{% url 'profile_teacher' %}" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300"><i class="fas fa-cogs mr-3"></i>Profile Settings</a></li>
+        <li>
+            <a href="#" class="flex items-center text-lg hover:bg-green-700 p-2 rounded-md block transition duration-300" onclick="confirmLogout(event)">
+                <i class="fas fa-sign-out-alt mr-3"></i>Logout
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Mobile Header (shown instead of sidebar on mobile) -->
+<div id="mobile-header" class="bg-gradient-to-r from-green-600 via-green-500 to-green-400 text-white p-4 flex items-center justify-between md:hidden hover:rounded-3xl">
+    <!-- Avatar Image for Mobile -->
+    <img class="w-12 h-12 rounded-full ring-4 ring-white shadow-lg"
+         src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}/static/myapp/images/Avatar.jpg{% endif %}"
+         alt="User Avatar">
+    <!-- Mobile Menu Button (Optional for dropdown on mobile) -->
+    <button id="sidebar-mobile-button" class="text-white text-2xl p-4" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+</div>
+
+<!-- Hidden Logout Form -->
+<form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<script>
+    // Function to confirm logout action and submit form
+    function confirmLogout(event) {
+        event.preventDefault();  // Prevent the default link behavior
+
+        // Display a confirmation dialog
+        if (confirm('Are you sure you want to logout?')) {
+            document.getElementById('logout-form').submit();  // If confirmed, submit the logout form
+        }
+    }
+
+    // Sidebar toggle function (only for mobile)
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('hidden'); // Toggle visibility of sidebar
+    }
+</script>
