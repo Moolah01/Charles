@@ -41,10 +41,19 @@ urlpatterns = [
     path('delete_account/', views.delete_account, name='delete_account'),
     # Change the reference in the URL pattern from views.teacher_dashboard to views.teacher_dashboard_view
     path('teacher-dashboard/', views.teacher_dashboard_view, name='teacher-dashboard'),
-    path('profile-teacher/', views.profile_teacher, name='profile_teacher'),
+    path('profile_teacher/', views.profile_teacher, name='profile_teacher'),
     path('edit-profile-teacher/', views.edit_profile_teacher, name='edit_profile_teacher'),
     path('change-password-teacher/', views.change_password_teacher, name='change_password_teacher'),
     path('delete-account-teacher/', views.delete_account_teacher, name='delete_account_teacher'),
+
+    #Manage_class
+    path('create_class/', views.create_class, name='create_class'),
+    path('invite_student/<int:class_id>/', views.invite_student_to_class, name='invite_student_to_class'),
+    path('class_list/', views.class_list, name='class_list'),
+    path('class/<int:class_id>/', views.class_detail, name='class_detail'),
+    path('accept_invitation/<int:invitation_id>/', views.accept_invitation, name='accept_invitation')
+
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

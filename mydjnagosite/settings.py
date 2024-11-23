@@ -25,7 +25,7 @@ SECRET_KEY = 'your-secret-key'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+AUTH_USER_MODEL = 'myapp.CustomUser'
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',  # Your custom app
 ]
-AUTH_USER_MODEL = 'myapp.CustomUser'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

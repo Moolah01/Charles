@@ -1,7 +1,10 @@
-from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
-from .models import CustomUser
+from django import forms
+from django.contrib.auth import get_user_model
+from .models import Class
+from django.conf import settings
+from .models import Quiz
 
 class RegisterForm(UserCreationForm):
     # Add the 'role' field to the form
@@ -57,3 +60,21 @@ class ProfileEditForm(forms.ModelForm):
                 'placeholder': 'Enter your last name'
             }),
         }
+
+User = get_user_model()
+
+class ClassForm(forms.ModelForm):
+    teacher = forms.ModelChoiceField(
+        queryset=User.objects.filter(role='teacher'),  # Tiyakin na may `role` field ang iyong user model
+        label='Teacher'
+    )
+
+    class Meta:
+        model = Class
+        fields = ['name', 'teacher', 'max_students']
+
+
+class QuizForm(forms.ModelForm):
+    class Meta:
+        model = Quiz
+        fields = ['class_assigned', 'title', 'total_questions', 'max_attempts']

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Student Dashboard</title>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <!-- Optional for better styling -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
@@ -27,6 +27,20 @@
 
             <!-- Dashboard Sections -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+
+            <!-- In student-dashboard.html -->
+            {% for invitation in invitations %}
+                <div>
+                    <p>{{ invitation.class_assigned.name }}</p>  <!-- Display the class name -->
+                    <p>Invitation status: {% if invitation.is_accepted %} Accepted {% else %} Pending {% endif %}</p>
+                </div>
+            {% empty %}
+                <p>You have no pending invitations.</p>
+            {% endfor %}
+
+
+
+
                 <!-- Class Joining Section -->
                 <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition duration-300 transform hover:scale-105">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Join a Class</h3>

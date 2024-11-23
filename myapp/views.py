@@ -1,12 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import update_session_auth_hash
-from .forms import ProfileEditForm
 from django.contrib import messages
-from django.urls import reverse
+from .forms import ClassForm
+from .models import Invitation
+from .models import CustomUser  # Import CustomUser model
 from .forms import RegisterForm  # Your custom register form (ensure it has a 'role' field)
+from django.shortcuts import render, get_object_or_404
+from .models import Class
+
 
 # Home page
 def index(request):
@@ -21,13 +25,11 @@ def custom_admin(request):
 def student_dashboard_view(request):
     return render(request, 'myapp/student-dashboard.html')
 
+
 # Change the name of this function from teacher_dashboard_view to teacher_dashboard
 @login_required
 def teacher_dashboard_view(request):
     return render(request, 'myapp/teacher_dashboard.html')
-
-
-
 
 # Registration view (redirecting based on role)
 def register(request):
@@ -124,7 +126,6 @@ def delete_account(request):
         return redirect('index')  # Redirect to the home page after account deletion
     return render(request, 'myapp/delete_account.html')
 
-
 @login_required
 def change_password(request):
     if request.method == 'POST':
@@ -186,18 +187,12 @@ def edit_profile_teacher(request):
 
     return render(request, 'edit_profile_teacher.html')
 
-
 @login_required
 def change_password_teacher(request):
     if request.method == 'POST':
         old_password = request.POST['old_password']
         new_password = request.POST['new_password']
         confirm_password = request.POST['confirm_password']
-
-        # Debugging: Print the passwords to ensure they are being captured correctly
-        print(f"Old password: {old_password}")
-        print(f"New password: {new_password}")
-        print(f"Confirm password: {confirm_password}")
 
         # Check if the new password matches the confirm password
         if new_password != confirm_password:
@@ -232,7 +227,6 @@ def change_password_teacher(request):
 
     return render(request, 'change_password_teacher.html')
 
-
 # Delete Teacher Account
 @login_required
 def delete_account_teacher(request):
@@ -242,6 +236,46 @@ def delete_account_teacher(request):
     return render(request, 'myapp/delete_account_teacher.html')
 
 
+def create_class(request):
+    if request.method == 'POST':
+        form = ClassForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('class_list')  # Adjust this to your desired redirect
+    else:
+        form = ClassForm()
+
+    return render(request, 'manage-class/create_class.html', {'form': form})
 
 
+def invite_student_to_class(request, class_id):
+    # Your logic for inviting a student to a class
+    class_instance = get_object_or_404(Class, id=class_id)
 
+    if request.method == 'POST':
+        # Handle the form submission and invitation logic here
+        pass
+
+    return render(request, 'manage-class/invite_student.html', {'class_instance': class_instance})
+
+
+def class_list(request):
+    # Fetch all classes or perform any required logic
+    classes = Class.objects.all()  # Assuming you have a 'Class' model
+    return render(request, 'manage-class/class_list.html', {'classes': classes})
+
+def class_detail(request, class_id):
+    # Retrieve the specific class based on the class_id from the URL
+    class_instance = get_object_or_404(Class, id=class_id)
+    return render(request, 'manage-class/class_detail.html', {'class_instance': class_instance})
+
+def accept_invitation(request, token):
+    # Retrieve the invitation based on the unique token
+    invitation = get_object_or_404(Invitation, token=token)
+
+    # Update the invitation status to accepted
+    invitation.accepted = True
+    invitation.save()
+
+    # Redirect the user to a confirmation page or wherever appropriate
+    return redirect('class_list')  # Adjust this to your desired redirect path
