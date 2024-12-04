@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser  # Import your CustomUser model
-from .models import Class, Quiz, QuizAttempt
+from .models import CustomUser
+from .models import Class , ClassEnrollment
 
 # Custom Admin Site
 class CustomAdminSite(admin.AdminSite):
@@ -55,20 +55,13 @@ admin.site.register(CustomUser, CustomUserAdmin)
 custom_admin_site.register(CustomUser, CustomUserAdmin)
 
 
+#New-----------------------------------------------------------------------
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):
-    list_display = ['name', 'teacher', 'max_students']
-    search_fields = ['name', 'teacher__username']
-    list_filter = ['teacher']
+    list_display = ('name', 'teacher', 'max_students', 'created_at')
+    search_fields = ('name', 'teacher__username')
+    list_filter = ('teacher',)
 
-@admin.register(Quiz)
-class QuizAdmin(admin.ModelAdmin):
-    list_display = ['title', 'class_assigned', 'total_questions', 'max_attempts']
-    search_fields = ['title', 'class_assigned__name']
-
-@admin.register(QuizAttempt)
-class QuizAttemptAdmin(admin.ModelAdmin):
-    list_display = ['student', 'quiz', 'attempts', 'score']
-    search_fields = ['student__username', 'quiz__title']
-
-
+@admin.register(ClassEnrollment)
+class ClassEnrollmentAdmin(admin.ModelAdmin):
+    list_display = ('student', 'enrolled_class', 'is_accepted', 'enrollment_date')

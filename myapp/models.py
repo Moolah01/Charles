@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.conf import settings
+from django.utils.timezone import now
 
+created_at = models.DateTimeField(auto_now_add=True, default=now)
 
 # Custom User model
 class CustomUser(AbstractUser):
@@ -46,51 +48,108 @@ class CustomUser(AbstractUser):
         verbose_name_plural = "Custom Users"
         ordering = ['id']
 
-
+#New-------------------------------------------------------------
 class Class(models.Model):
     name = models.CharField(max_length=255, verbose_name="Class Name")
-    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='classes',
-                                verbose_name="Teacher")
-    students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='enrolled_classes', blank=True,
-                                      verbose_name="Students")
-    max_students = models.PositiveIntegerField(default=30, verbose_name="Max Number of Students")
+    description = models.TextField(blank=True, null=True, verbose_name="Class Description")
+    teacher = models.ForeignKey(
+        'CustomUser',
+        on_delete=models.CASCADE,
+        related_name='classes',
+        verbose_name="Teacher"
+    )
+    max_students = models.PositiveIntegerField(default=30, verbose_name="Maximum Students")
+    students = models.ManyToManyField(
+        'CustomUser',
+        related_name='enrolled_classes',
+        blank=True,
+        verbose_name="Students"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = "Class"
-        verbose_name_plural = "Classes"
+# Invitation Model
+class Invitation(models.Model):
+    teacher = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='sent_invitations',
+        verbose_name="Teacher"
+    )
+    student = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='received_invitations',
+        verbose_name="Student"
+    )
+    class_invited = models.ForeignKey(
+        Class,
+        on_delete=models.CASCADE,
+        related_name='invitations',
+        verbose_name="Class Invited"
+    )
+    is_accepted = models.BooleanField(
+        default=False,
+        verbose_name="Invitation Accepted"
+    )
+    date_sent = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Date Sent"
+    )
 
+    def __str__(self):
+        return f"Invitation to {self.student.username} for {self.class_invited.name} by {self.teacher.username}"
+
+    class Meta:
+        verbose_name = "Invitation"
+        verbose_name_plural = "Invitations"
+        ordering = ['-date_sent']
+
+class ClassEnrollment(models.Model):
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='enrollments')
+    enrolled_class = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='enrollments')
+    is_accepted = models.BooleanField(default=False)  # Field to mark accepted classes
+    enrollment_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student.username} - {self.enrolled_class.name}"
+
+#Quiz New----------------------------------------------------------
+#Quiz Model
 class Quiz(models.Model):
-    class_assigned = models.ForeignKey(Class, on_delete=models.CASCADE, related_name='quizzes', verbose_name="Assigned Class")
-    title = models.CharField(max_length=255, verbose_name="Quiz Title")
-    total_questions = models.PositiveIntegerField(verbose_name="Total Questions")
-    max_attempts = models.PositiveIntegerField(default=1, verbose_name="Max Attempts per Student")
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    assigned_class = models.ForeignKey('Class', on_delete=models.CASCADE, related_name='quizzes')
+    schedule = models.DateTimeField()  # Date and time of the quiz
+    timer = models.PositiveIntegerField(help_text="Time limit in minutes")  # Timer for the quiz
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
-    class Meta:
-        verbose_name = "Quiz"
-        verbose_name_plural = "Quizzes"
+class Question(models.Model):
+    QUESTION_TYPES = [
+        ('MC', 'Multiple Choice'),
+        ('TF', 'True or False'),
+        ('ID', 'Identification'),
+    ]
 
-class QuizAttempt(models.Model):
-    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Student")
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, verbose_name="Quiz")
-    attempts = models.PositiveIntegerField(default=0, verbose_name="Number of Attempts")
-    score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Score")
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')  # Add this relationship
+    text = models.TextField()
+    question_type = models.CharField(max_length=2, choices=QUESTION_TYPES)
+    correct_answer = models.TextField()
 
     def __str__(self):
-        return f"{self.student.username} - {self.quiz.title}"
+        return self.text
 
-    class Meta:
-        verbose_name = "Quiz Attempt"
-        verbose_name_plural = "Quiz Attempts"
+class Option(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='options')
+    text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)  # Identify the correct answer for MCQs
 
-# Ensure the Invitation model has student, is_accepted, and any other necessary fields
-class Invitation(models.Model):
-    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Assuming CustomUser is your user model
-    class_assigned = models.ForeignKey(Class, on_delete=models.CASCADE)
-    is_accepted = models.BooleanField(default=False)
+    def __str__(self):
+        return self.text
+
 

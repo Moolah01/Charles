@@ -1,10 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from django import forms
-from django.contrib.auth import get_user_model
 from .models import Class
-from django.conf import settings
-from .models import Quiz
+from .models import Quiz, Question, Option
+
 
 class RegisterForm(UserCreationForm):
     # Add the 'role' field to the form
@@ -61,20 +60,37 @@ class ProfileEditForm(forms.ModelForm):
             }),
         }
 
-User = get_user_model()
-
+#New-------------------------------------------
 class ClassForm(forms.ModelForm):
-    teacher = forms.ModelChoiceField(
-        queryset=User.objects.filter(role='teacher'),  # Tiyakin na may `role` field ang iyong user model
-        label='Teacher'
-    )
-
     class Meta:
         model = Class
-        fields = ['name', 'teacher', 'max_students']
+        fields = ['name', 'description', 'max_students']
 
+#Di pako sure kung email
+class InviteStudentForm(forms.Form):
+    student_username = forms.CharField(label="Student Username", max_length=150)
 
+#Eto bago----------------------------------------------------------------------
 class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ['class_assigned', 'title', 'total_questions', 'max_attempts']
+        fields = ['title', 'description', 'assigned_class', 'schedule', 'timer']
+
+
+class QuestionForm(forms.ModelForm):
+    QUESTION_TYPES = [
+        ('MC', 'Multiple Choice'),
+        ('TF', 'True or False'),
+        ('ID', 'Identification'),
+    ]
+
+    question_type = forms.ChoiceField(choices=QUESTION_TYPES, widget=forms.Select)
+
+    class Meta:
+        model = Question
+        fields = ['text', 'question_type', 'correct_answer']
+
+class OptionForm(forms.ModelForm):
+    class Meta:
+        model = Option
+        fields = ['question', 'text']

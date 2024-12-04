@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Invitations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Your Invitations</h1>
+
+            {% if invitations %}
+                <ul class="space-y-4">
+                    {% for invitation in invitations %}
+                        <li class="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+                            <p class="text-lg font-semibold text-gray-700">Class: {{ invitation.class_invited.name }}</p>
+                            <p class="text-sm text-gray-600">Teacher: {{ invitation.teacher.username }}</p>
+                            <form method="post" action="{% url 'accept_invitation' invitation.student.username %}" class="mt-4">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded hover:bg-blue-600">
+                                    Accept Invitation
+                                </button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center text-gray-500 text-lg">You have no pending invitations.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Quizzes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .transition {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="min-h-screen p-6">
+        <!-- Page Header -->
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Manage Quizzes for {{ class.name }}</h1>
+
+        <!-- Create Quiz Button -->
+        <a href="{% url 'create_quiz' class.id %}"
+           class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition shadow-md">
+            Create New Quiz
+        </a>
+
+        <!-- Feedback Message Placeholder -->
+        <div id="feedback" class="mt-4 hidden">
+            <p class="text-green-600 font-medium">Your changes have been saved successfully.</p>
+        </div>
+
+        <!-- Quizzes List -->
+        <div class="mt-6 space-y-4">
+            {% for quiz in quizzes %}
+            <div class="p-4 bg-white rounded-lg shadow-md flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">{{ quiz.title }}</h3>
+                    <p class="text-sm text-gray-600">{{ quiz.description }}</p>
+                </div>
+                <div class="space-x-4">
+                    <!-- Edit Button -->
+                    <button onclick="openEditModal('{{ quiz.id }}', '{{ quiz.title|escapejs }}', '{{ quiz.description|escapejs }}')"
+                            class="bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 transition shadow-sm">
+                        Edit
+                    </button>
+                    <!-- Delete Button -->
+                    <button onclick="openDeleteModal('{{ quiz.id }}', '{{ quiz.title|escapejs }}')"
+                            class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition shadow-sm">
+                        Delete
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-600">No quizzes found for this class.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Edit Quiz Modal -->
+    <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50" aria-hidden="true">
+        <div class="bg-white p-6 rounded-lg shadow-md w-1/3">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Edit Quiz</h2>
+            <form method="POST" id="editQuizForm">
+                {% csrf_token %}
+                <input type="hidden" id="editQuizId" name="quiz_id">
+                <div class="mb-4">
+                    <label for="editQuizTitle" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="editQuizTitle" name="title" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                </div>
+                <div class="mb-4">
+                    <label for="editQuizDescription" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="editQuizDescription" name="description" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></textarea>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeEditModal()"
+                            class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Quiz Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50" aria-hidden="true">
+        <div class="bg-white p-6 rounded-lg shadow-md w-1/3">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Delete Quiz</h2>
+            <p id="deleteQuizText" class="text-gray-600 mb-4"></p>
+            <form method="POST" id="deleteQuizForm">
+                {% csrf_token %}
+                <input type="hidden" id="deleteQuizId" name="quiz_id">
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeDeleteModal()"
+                            class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition">
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(quizId, title, description) {
+            document.getElementById('editQuizId').value = quizId;
+            document.getElementById('editQuizTitle').value = title;
+            document.getElementById('editQuizDescription').value = description;
+            toggleModal('editModal', true);
+        }
+
+        function closeEditModal() {
+            toggleModal('editModal', false);
+        }
+
+        function openDeleteModal(quizId, title) {
+            document.getElementById('deleteQuizId').value = quizId;
+            document.getElementById('deleteQuizText').textContent =
+                `Are you sure you want to delete the quiz "${title}"? This action cannot be undone.`;
+            toggleModal('deleteModal', true);
+        }
+
+        function closeDeleteModal() {
+            toggleModal('deleteModal', false);
+        }
+
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            modal.classList.toggle('hidden', !show);
+            modal.classList.toggle('flex', show);
+        }
+    </script>
+
+</body>
+</html>

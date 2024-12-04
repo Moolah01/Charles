@@ -1,0 +1,27 @@
+
+{% block content %}
+<h1>{{ quiz.title }}</h1>
+<p>{{ quiz.description }}</p>
+<form method="post" action="{% url 'submit_quiz' quiz.id %}">
+    {% csrf_token %}
+    <ol>
+        {% for question in questions %}
+            <li>
+                <p>{{ question.text }}</p>
+                {% if question.question_type == 'MCQ' %}
+                    {% for option in question.options.all %}
+                        <input type="radio" name="question_{{ question.id }}" value="{{ option.text }}">
+                        {{ option.text }}<br>
+                    {% endfor %}
+                {% elif question.question_type == 'TF' %}
+                    <input type="radio" name="question_{{ question.id }}" value="True"> True<br>
+                    <input type="radio" name="question_{{ question.id }}" value="False"> False<br>
+                {% elif question.question_type == 'ID' %}
+                    <input type="text" name="question_{{ question.id }}">
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>
+{% endblock %}

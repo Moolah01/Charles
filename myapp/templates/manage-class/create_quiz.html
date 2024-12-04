@@ -1,0 +1,68 @@
+<!-- create_quiz.html -->
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="mt-4">
+        <label for="question_type" class="block text-sm font-medium text-gray-700">Question Type</label>
+        <select id="question_type" name="question_type" class="mt-2 block w-full">
+            <option value="MC">Multiple Choice</option>
+            <option value="TF">True or False</option>
+            <option value="ID">Identification</option>
+        </select>
+    </div>
+
+    <div id="multiple_choice_options" class="mt-4 hidden">
+        <label for="option_a" class="block text-sm font-medium text-gray-700">Option A</label>
+        <input type="text" id="option_a" name="option_a" class="mt-2 block w-full" />
+
+        <label for="option_b" class="block text-sm font-medium text-gray-700">Option B</label>
+        <input type="text" id="option_b" name="option_b" class="mt-2 block w-full" />
+
+        <label for="option_c" class="block text-sm font-medium text-gray-700">Option C</label>
+        <input type="text" id="option_c" name="option_c" class="mt-2 block w-full" />
+
+        <label for="option_d" class="block text-sm font-medium text-gray-700">Option D</label>
+        <input type="text" id="option_d" name="option_d" class="mt-2 block w-full" />
+    </div>
+
+    <div id="true_false_options" class="mt-4 hidden">
+        <label for="correct_answer" class="block text-sm font-medium text-gray-700">Correct Answer</label>
+        <select id="correct_answer" name="correct_answer" class="mt-2 block w-full">
+            <option value="True">True</option>
+            <option value="False">False</option>
+        </select>
+    </div>
+
+    <div id="identification_options" class="mt-4 hidden">
+        <label for="correct_answer" class="block text-sm font-medium text-gray-700">Correct Answer</label>
+        <input type="text" id="correct_answer" name="correct_answer" class="mt-2 block w-full" />
+    </div>
+
+    <div class="mt-4 flex justify-end space-x-4">
+        <a href="{% url 'manage_quizzes' class.id %}" class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition shadow-md">
+            Cancel
+        </a>
+        <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition shadow-md">
+            Create Quiz
+        </button>
+    </div>
+</form>
+
+<script>
+    document.getElementById('question_type').addEventListener('change', function() {
+        const type = this.value;
+
+        document.getElementById('multiple_choice_options').classList.add('hidden');
+        document.getElementById('true_false_options').classList.add('hidden');
+        document.getElementById('identification_options').classList.add('hidden');
+
+        if (type === 'MC') {
+            document.getElementById('multiple_choice_options').classList.remove('hidden');
+        } else if (type === 'TF') {
+            document.getElementById('true_false_options').classList.remove('hidden');
+        } else if (type === 'ID') {
+            document.getElementById('identification_options').classList.remove('hidden');
+        }
+    });
+</script>

@@ -1,0 +1,8 @@
+<h1>My Enrolled Classes</h1>
+<ul>
+  {% for class in classes %}
+    <li>{{ class.name }}</li>
+  {% empty %}
+    <li>You are not enrolled in any classes.</li>
+  {% endfor %}
+</ul>
